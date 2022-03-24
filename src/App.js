@@ -1,21 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
+import { loadFromLocalStorage, saveToLocalStorage } from "./utils/localstorage";
+import { uuidGen } from "./utils/uuid";
+import Headline from "./components/Headline";
+import TaskInput from "./components/TaskInput";
+import TaskList from "./components/TaskList";
 
-
-function* uuidGen(){
-  let id = 0;
-
-  while (true) {
-    yield id;
-    id++;
-  }
-}
-
-const uuid = uuidGen()
 
 function App() {
   const [value, setValue] = useState("");
   const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    setTasks(loadFromLocalStorage('tds'))
+  }, []);
+
+  useEffect(() => {
+    saveToLocalStorage('tds', tasks);
+  }, [tasks])
 
   const handleChange = (event) => {
     setValue(event.target.value);
@@ -23,13 +25,13 @@ function App() {
 
   const handleKeyUp = (event) => {
     if (event.key === 'Enter'){
-      setTasks([...tasks, {
+      const newTask = [...tasks, {
         name: value,
-        id: uuid.next().value,
+        id: uuidGen(),
         status: false
-      }]);
-      setValue('');
-      
+      }];
+      setTasks(newTask);
+      setValue('');     
     }
   }
 
@@ -45,28 +47,24 @@ function App() {
   }
 
   function handeDeleteTask(id) {
-    setTasks(tasks.filter(task => task.id !== id))
+    const newTasks = tasks.filter(task => task.id !== id)
+    setTasks(newTasks)
+    saveToLocalStorage('tds', newTasks)
   }
 
   return (
     <div className="App">
-      <h1>todos</h1>
-      <input type="text"
-             value={value} 
-             onChange={handleChange}
-             onKeyUp={handleKeyUp}
+      <Headline/>
+      <TaskInput 
+        value={value} 
+        handleChange={handleChange}
+        handleKeyUp={handleKeyUp}
       />
-      <ul>
-        {tasks.map(({id, name, status}) => (
-          <li key={id} className='todo-item'>
-            <span className={status ? 'status done' : 'status active'}
-                  onClick={() => handleChangeStatus(id)}
-            />
-            {name}
-            <button onClick={() => handeDeleteTask(id)}>x</button>
-          </li>
-          ))}
-      </ul>
+      <TaskList 
+        tasks={tasks} 
+        handleChangeStatus={handleChangeStatus} 
+        handeDeleteTask={handeDeleteTask}
+      />
     </div>
   );
 }

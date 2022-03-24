@@ -10,6 +10,7 @@ import TaskList from "./components/TaskList";
 function App() {
   const [value, setValue] = useState("");
   const [tasks, setTasks] = useState([]);
+  const [selection, setSelection] = useState('all');
 
   useEffect(() => {
     setTasks(loadFromLocalStorage('tds'))
@@ -52,6 +53,10 @@ function App() {
     saveToLocalStorage('tds', newTasks)
   }
 
+  function handeDeleteDone() {
+    setTasks(tasks.filter(task => !task.status))
+  }
+
   return (
     <div className="App">
       <Headline/>
@@ -60,12 +65,27 @@ function App() {
         handleChange={handleChange}
         handleKeyUp={handleKeyUp}
       />
-      <TaskList 
+      {tasks.length === 0 ? ('') : (
+
+      <>
+        <TaskList 
         tasks={tasks} 
         handleChangeStatus={handleChangeStatus} 
         handeDeleteTask={handeDeleteTask}
+        selection={selection}
       />
+      <p>{tasks.filter((e) => !e.status).length} items left</p>
+      <div>
+        <button onClick={() => setSelection('all')}>All</button>
+        <button onClick={() => setSelection(false)}>Active</button>
+        <button onClick={() => setSelection(true)}>Complited</button>
+      </div>
+      {tasks.filter((e) => e.status).length > 0 ? (<button onClick={handeDeleteDone}>Clear completed</button>) : ('')}
+      </>)
+
+      }
     </div>
+  
   );
 }
 

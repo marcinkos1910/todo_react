@@ -1,9 +1,11 @@
 import TaskItem from "./TaskItem";
 
-function TaskList({tasks, handleChangeStatus, handeDeleteTask}) {
+function TaskList({tasks, handleChangeStatus, handeDeleteTask, selection}) {
     return(
         <ul>
-        {tasks.map(({id, name, status}) => <TaskItem
+        {tasks
+            .filter((e) => selection === 'all' || e.status === selection)
+            .map(({id, name, status}) => <TaskItem
             key={id}
             id={id}
             status={status}

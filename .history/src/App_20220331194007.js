@@ -5,8 +5,8 @@ import { uuidGen } from "./utils/uuid";
 import Headline from "./components/Headline";
 import TaskInput from "./components/TaskInput";
 import TaskList from "./components/TaskList";
+import { firestore } from "./firebase";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "./firebase";
 
 
 function App() {
@@ -16,14 +16,11 @@ function App() {
 
   const getData = async () => {
     const querySnapshot = await getDocs(collection(db, 'todos'));
-    setTasks(querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data()
-    })));
   }
 
   useEffect(() => {
     getData()
+    console.log(x);
   }, [])
 
   useEffect(() => {

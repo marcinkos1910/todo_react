@@ -16,10 +16,9 @@ function App() {
 
   const getData = async () => {
     const querySnapshot = await getDocs(collection(db, 'todos'));
-    setTasks(querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data()
-    })));
+    querySnapshot.map((doc) => ({
+      id: 
+    }))
   }
 
   useEffect(() => {

@@ -5,8 +5,6 @@ import { uuidGen } from "./utils/uuid";
 import Headline from "./components/Headline";
 import TaskInput from "./components/TaskInput";
 import TaskList from "./components/TaskList";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "./firebase";
 
 
 function App() {
@@ -14,17 +12,7 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [selection, setSelection] = useState('all');
 
-  const getData = async () => {
-    const querySnapshot = await getDocs(collection(db, 'todos'));
-    setTasks(querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data()
-    })));
-  }
-
-  useEffect(() => {
-    getData()
-  }, [])
+  use
 
   useEffect(() => {
     setTasks(loadFromLocalStorage('tds'))

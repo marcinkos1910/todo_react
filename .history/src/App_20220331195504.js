@@ -19,7 +19,7 @@ function App() {
     setTasks(querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data()
-    })));
+    }));
   }
 
   useEffect(() => {

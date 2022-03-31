@@ -47,7 +47,7 @@ function App() {
 
       const docRef = await addDoc(collection(db, "todos"), newTodo)
 
-      setTasks([Object.assign({id: docRef.id}, newTodo), ...tasks]);
+      setTasks([Object.assign(newTodo, {id: docRef}), ...tasks]);
       setValue('');     
     }
   }
@@ -69,7 +69,7 @@ function App() {
   async function handeDeleteDone() {
     const batch = writeBatch(db);
     tasks.forEach(task => {
-      if (task.status){
+      if (!task.status){
         const ref = doc(db, "todos", task.id);
         batch.delete(ref);
       }

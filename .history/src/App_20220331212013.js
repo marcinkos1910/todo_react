@@ -47,7 +47,7 @@ function App() {
 
       const docRef = await addDoc(collection(db, "todos"), newTodo)
 
-      setTasks([Object.assign({id: docRef.id}, newTodo), ...tasks]);
+      setTasks([Object.assign(newTodo, {id: docRef.i}), ...tasks]);
       setValue('');     
     }
   }

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { loadFromLocalStorage, saveToLocalStorage } from "./utils/localstorage";
+import { uuidGen } from "./utils/uuid";
 import Headline from "./components/Headline";
 import TaskInput from "./components/TaskInput";
 import TaskList from "./components/TaskList";
-import { addDoc, collection, getDocs, updateDoc, doc, deleteDoc, writeBatch } from "firebase/firestore";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
 
 
@@ -47,35 +48,34 @@ function App() {
 
       const docRef = await addDoc(collection(db, "todos"), newTodo)
 
-      setTasks([Object.assign({id: docRef.id}, newTodo), ...tasks]);
+      const newTask = [...tasks, {
+        name: docRef.,
+        id: uuidGen(),
+        status: false
+      }];
+      setTasks(newTask);
       setValue('');     
     }
   }
 
-  async function handleChangeStatus(id) {
-    const newTasks = tasks.filter(task => task.id === id)[0];
-    newTasks.status = !newTasks.status;
-
-    await updateDoc(doc(db, "todos", id), {status: newTasks.status});
-
-    setTasks([...tasks]);
-  }
-
-  async function handeDeleteTask(id) {
-    await deleteDoc(doc(db, "todos", id));
-    setTasks(tasks.filter(task => task.id !== id))
-  }
-
-  async function handeDeleteDone() {
-    const batch = writeBatch(db);
-    tasks.forEach(task => {
-      if (task.status){
-        const ref = doc(db, "todos", task.id);
-        batch.delete(ref);
+  function handleChangeStatus(id) {
+    const newTasks = tasks.map(task => {
+      if (task.id === id) {
+        task.status = !task.status
       }
+      return task
     })
-    await batch.commit();
 
+    setTasks(newTasks);
+  }
+
+  function handeDeleteTask(id) {
+    const newTasks = tasks.filter(task => task.id !== id)
+    setTasks(newTasks)
+    saveToLocalStorage('tds', newTasks)
+  }
+
+  function handeDeleteDone() {
     setTasks(tasks.filter(task => !task.status))
   }
 

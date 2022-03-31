@@ -47,7 +47,7 @@ function App() {
 
       const docRef = await addDoc(collection(db, "todos"), newTodo)
 
-      setTasks([Object.assign({id: docRef.id}, newTodo), ...tasks]);
+      setTasks([Object.assign(newTodo, {id: docRef}), ...tasks]);
       setValue('');     
     }
   }
@@ -66,15 +66,11 @@ function App() {
     setTasks(tasks.filter(task => task.id !== id))
   }
 
-  async function handeDeleteDone() {
+  function handeDeleteDone() {
     const batch = writeBatch(db);
     tasks.forEach(task => {
-      if (task.status){
-        const ref = doc(db, "todos", task.id);
-        batch.delete(ref);
-      }
+      if ()
     })
-    await batch.commit();
 
     setTasks(tasks.filter(task => !task.status))
   }

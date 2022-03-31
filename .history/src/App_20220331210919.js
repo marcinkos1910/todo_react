@@ -4,7 +4,7 @@ import { loadFromLocalStorage, saveToLocalStorage } from "./utils/localstorage";
 import Headline from "./components/Headline";
 import TaskInput from "./components/TaskInput";
 import TaskList from "./components/TaskList";
-import { addDoc, collection, getDocs, updateDoc, doc, deleteDoc, writeBatch } from "firebase/firestore";
+import { addDoc, collection, getDocs, updateDoc, doc, deleteDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
 
@@ -47,7 +47,7 @@ function App() {
 
       const docRef = await addDoc(collection(db, "todos"), newTodo)
 
-      setTasks([Object.assign({id: docRef.id}, newTodo), ...tasks]);
+      setTasks([Object.assign(newTodo, {id: docRef}), ...tasks]);
       setValue('');     
     }
   }
@@ -63,19 +63,10 @@ function App() {
 
   async function handeDeleteTask(id) {
     await deleteDoc(doc(db, "todos", id));
-    setTasks(tasks.filter(task => task.id !== id))
+    setTasks(tasks.filter(task => task.id !== id)
   }
 
-  async function handeDeleteDone() {
-    const batch = writeBatch(db);
-    tasks.forEach(task => {
-      if (task.status){
-        const ref = doc(db, "todos", task.id);
-        batch.delete(ref);
-      }
-    })
-    await batch.commit();
-
+  function handeDeleteDone() {
     setTasks(tasks.filter(task => !task.status))
   }
 

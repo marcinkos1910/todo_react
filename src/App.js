@@ -4,7 +4,7 @@ import { loadFromLocalStorage, saveToLocalStorage } from "./utils/localstorage";
 import Headline from "./components/Headline";
 import TaskInput from "./components/TaskInput";
 import TaskList from "./components/TaskList";
-import { addDoc, collection, getDocs, updateDoc, doc, deleteDoc, writeBatch } from "firebase/firestore";
+import { addDoc, collection, getDocs, updateDoc, doc, deleteDoc, writeBatch, onSnapshot } from "firebase/firestore";
 import { db } from "./firebase";
 
 
@@ -13,25 +13,21 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [selection, setSelection] = useState('all');
 
-  const getData = async () => {
-    const querySnapshot = await getDocs(collection(db, 'todos'));
-    setTasks(querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data()
-    })));
-  }
+
 
   useEffect(() => {
-    getData()
-  }, [])
+    const unsubscribe = onSnapshot(collection(db, 'todos'), (snapshot) => {
+        setTasks(snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        })))
+    });
 
-  useEffect(() => {
-    setTasks(loadFromLocalStorage('tds'))
-  }, []);
+    return () => {
+        unsubscribe();
+    }
+}, []);
 
-  useEffect(() => {
-    saveToLocalStorage('tds', tasks);
-  }, [tasks])
 
   const handleChange = (event) => {
     setValue(event.target.value);

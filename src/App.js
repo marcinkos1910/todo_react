@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./App.css";
+import "./App.scss";
 import { loadFromLocalStorage, saveToLocalStorage } from "./utils/localstorage";
 import Headline from "./components/Headline";
 import TaskInput from "./components/TaskInput";
